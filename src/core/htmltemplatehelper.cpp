@@ -76,13 +76,11 @@ static QString fillScriptTag(const QString &p_scriptFile)
     return QString("<script type=\"text/javascript\" src=\"%1\"></script>\n").arg(url.toString());
 }
 
-static void fillThemeStyles(QString &p_template)
+static void fillThemeStyles(QString &p_template, const QString &p_webStyleSheetFile, const QString &p_highlightStyleSheetFile)
 {
     QString styles;
-    const auto &themeMgr = VNoteX::getInst().getThemeMgr();
-
-    styles += fillStyleTag(themeMgr.getFile(Theme::File::WebStyleSheet));
-    styles += fillStyleTag(themeMgr.getFile(Theme::File::HighlightStyleSheet));
+    styles += fillStyleTag(p_webStyleSheetFile);
+    styles += fillStyleTag(p_highlightStyleSheetFile);
 
     if (!styles.isEmpty()) {
         p_template.replace(QStringLiteral("<!-- VX_THEME_STYLES_PLACEHOLDER -->"),
@@ -142,16 +140,25 @@ void HtmlTemplateHelper::updateMarkdownViewerTemplate(const MarkdownEditorConfig
 
     s_markdownViewerTemplate.m_revision = p_config.revision();
 
+    const auto &themeMgr = VNoteX::getInst().getThemeMgr();
+    s_markdownViewerTemplate.m_template =
+        generateMarkdownViewerTemplate(p_config,
+                                       themeMgr.getFile(Theme::File::WebStyleSheet),
+                                       themeMgr.getFile(Theme::File::HighlightStyleSheet));
+}
+
+QString HtmlTemplateHelper::generateMarkdownViewerTemplate(const MarkdownEditorConfig &p_config,
+                                                           const QString &p_webStyleSheetFile,
+                                                           const QString &p_highlightStyleSheetFile)
+{
     const auto &viewerResource = p_config.getViewerResource();
 
-    {
-        auto templateFile = ConfigMgr::getInst().getUserOrAppFile(viewerResource.m_template);
-        s_markdownViewerTemplate.m_template = FileUtils::readTextFile(templateFile);
-    }
+    const auto templateFile = ConfigMgr::getInst().getUserOrAppFile(viewerResource.m_template);
+    auto htmlTemplate = FileUtils::readTextFile(templateFile);
 
-    fillGlobalStyles(s_markdownViewerTemplate.m_template, viewerResource);
+    fillGlobalStyles(htmlTemplate, viewerResource);
 
-    fillThemeStyles(s_markdownViewerTemplate.m_template);
+    fillThemeStyles(htmlTemplate, p_webStyleSheetFile, p_highlightStyleSheetFile);
 
     {
         WebGlobalOptions opts;
@@ -165,8 +172,10 @@ void HtmlTemplateHelper::updateMarkdownViewerTemplate(const MarkdownEditorConfig
         opts.m_autoBreakEnabled = p_config.getAutoBreakEnabled();
         opts.m_linkifyEnabled = p_config.getLinkifyEnabled();
         opts.m_indentFirstLineEnabled = p_config.getIndentFirstLineEnabled();
-        fillGlobalOptions(s_markdownViewerTemplate.m_template, opts);
+        fillGlobalOptions(htmlTemplate, opts);
     }
 
-    fillResources(s_markdownViewerTemplate.m_template, viewerResource);
+    fillResources(htmlTemplate, viewerResource);
+
+    return htmlTemplate;
 }

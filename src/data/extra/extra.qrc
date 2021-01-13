@@ -8,7 +8,8 @@
         <file>docs/zh_CN/about_vnotex.txt</file>
         <file>docs/zh_CN/shortcuts.md</file>
         <file>docs/zh_CN/markdown_guide.md</file>
-        <file>web/markdownviewertemplate.html</file>
+        <file>web/markdown-viewer-template.html</file>
+        <file>web/markdown-export-template.html</file>
         <file>web/css/globalstyles.css</file>
         <file>web/css/markdownit.css</file>
         <file>web/css/imageviewer.css</file>

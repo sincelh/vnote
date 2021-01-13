@@ -42,6 +42,10 @@ namespace vnotex
         static const QString &getMarkdownViewerTemplate();
         static void updateMarkdownViewerTemplate(const MarkdownEditorConfig &p_config);
 
+        static QString generateMarkdownViewerTemplate(const MarkdownEditorConfig &p_config,
+                                                      const QString &p_webStyleSheetFile,
+                                                      const QString &p_highlightStyleSheetFile);
+
     private:
         struct Template
         {

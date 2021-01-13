@@ -63,6 +63,7 @@ namespace vnotex
         void init(const QJsonObject &p_obj)
         {
             m_template = p_obj[QStringLiteral("template")].toString();
+            m_exportTemplate = p_obj[QStringLiteral("export_template")].toString();
 
             auto ary = p_obj[QStringLiteral("resources")].toArray();
             m_resources.resize(ary.size());
@@ -75,6 +76,7 @@ namespace vnotex
         {
             QJsonObject obj;
             obj[QStringLiteral("template")] = m_template;
+            obj[QStringLiteral("export_template")] = m_exportTemplate;
 
             {
                 QJsonArray ary;
@@ -89,6 +91,9 @@ namespace vnotex
 
         // HTML template file.
         QString m_template;
+
+        // HTML template file for exported HTML.
+        QString m_exportTemplate;
 
         // Resources to fill in the template.
         QVector<Resource> m_resources;
